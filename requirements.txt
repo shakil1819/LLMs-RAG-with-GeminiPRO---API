@@ -5,3 +5,4 @@ fastapi
 uvicorn[standard]
 beautifulsoup4
 numpy
+langchain
