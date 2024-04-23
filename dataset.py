@@ -26,7 +26,11 @@ def get_sitemap_urls(url):
 
 def get_page_text(url):
     try:
-        response = requests.get(url)
+        
+        cookies={"pwv":"2",
+        "pws":"functional|analytics|content_recommendation|targeted_advertising|social_media"}
+
+        response = requests.get(url, cookies=cookies)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             text = soup.get_text()
