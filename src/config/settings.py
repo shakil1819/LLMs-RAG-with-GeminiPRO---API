@@ -4,7 +4,7 @@
 import os
 from dotenv import load_dotenv
 import warnings
-import nest_asyncio
+# import nest_asyncio
 
 # Load environment variables
 load_dotenv()
@@ -13,7 +13,7 @@ load_dotenv()
 warnings.filterwarnings("ignore")
 
 # Apply nest_asyncio
-nest_asyncio.apply()
+# nest_asyncio.apply()
 
 # Retrieve API keys and URLs
 gemini_api_key = os.getenv("GOOGLE_API_KEY")
