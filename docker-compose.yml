@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  streamlit:
+    build: .
+    ports:
+      - "8501:8501"
+    command: ["streamlit", "run", "main.py"]
+    environment:
+      GOOGLE_API_KEY_FILE: /run/secrets/google_api_key
+      QDRANT_API_KEY_FILE: /run/secrets/qdrant_api_key
+      QDRANT_URL_FILE: /run/secrets/qdrant_url
+    secrets:
+      - google_api_key
+      - qdrant_api_key
+      - qdrant_url
+        
   app:
     build: .
     ports:
@@ -21,3 +35,4 @@ secrets:
     file: ./secrets/qdrant_api_key.secret
   qdrant_url:
     file: ./secrets/qdrant_url.secret
+
