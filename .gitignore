@@ -8,6 +8,7 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 .env
+secrets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

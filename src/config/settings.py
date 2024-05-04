@@ -1,21 +1,18 @@
-#==This file contains Gemini, QDrant setup instructions===
-# src/config/settings.py
+# config/settings.py
 
 import os
-from dotenv import load_dotenv
-import warnings
-# import nest_asyncio
 
-# Load environment variables
-load_dotenv()
+# Define paths to secret files
+google_api_key_file = os.environ.get("GOOGLE_API_KEY_FILE")
+qdrant_api_key_file = os.environ.get("QDRANT_API_KEY_FILE")
+qdrant_url_file = os.environ.get("QDRANT_URL_FILE")
 
-# Filter warnings
-warnings.filterwarnings("ignore")
-
-# Apply nest_asyncio
-# nest_asyncio.apply()
+# Read API keys and URLs from secret files
+def read_secret_file(file_path):
+    with open(file_path, "r") as file:
+        return file.read().strip()
 
 # Retrieve API keys and URLs
-gemini_api_key = os.getenv("GOOGLE_API_KEY")
-qdrant_api_key = os.getenv("QDRANT_API_KEY")
-qdrant_url = os.getenv("QDRANT_URL")
+google_api_key = read_secret_file(google_api_key_file)
+qdrant_api_key = read_secret_file(qdrant_api_key_file)
+qdrant_url = read_secret_file(qdrant_url_file)

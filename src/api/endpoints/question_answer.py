@@ -5,14 +5,24 @@ from src.services.prompt_service import get_vector_store, get_prompt, process_ll
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
-
+from src.config.settings import google_api_key,qdrant_api_key,qdrant_url
 router = APIRouter()
+
+with open("/run/secrets/google_api_key", "r") as google_api_key_file:
+    google_api_key = google_api_key_file.read().strip()
+
+with open("/run/secrets/qdrant_api_key", "r") as qdrant_api_key_file:
+    qdrant_api_key = qdrant_api_key_file.read().strip()
+
+with open("/run/secrets/qdrant_url", "r") as qdrant_url_file:
+    qdrant_url = qdrant_url_file.read().strip()
+
 
 # Step 1: Define vector store
 vector_store = get_vector_store()
 
 # Using Gemini-Pro 
-llm = ChatGoogleGenerativeAI(model="gemini-pro", gemini_api_key=os.getenv("GOOGLE_API_KEY"), temperature=0.9, max_tokens=1024, convert_system_message_to_human=True)
+llm = ChatGoogleGenerativeAI(model="gemini-pro", gemini_api_key=google_api_key, temperature=0.9, max_tokens=1024, convert_system_message_to_human=True)
 
 # Generate Prompt Template
 sys_prompt = """
