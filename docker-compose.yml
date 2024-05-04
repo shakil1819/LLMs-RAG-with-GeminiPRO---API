@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    secrets:
+      - google_api_key
+      - qdrant_api_key
+      - qdrant_url
+
+secrets:
+  google_api_key:
+    environment: GOOGLE_API_KEY
+  qdrant_api_key:
+    environment: QDRANT_API_KEY
+  qdrant_url:
+    environment: QDRANT_URL
