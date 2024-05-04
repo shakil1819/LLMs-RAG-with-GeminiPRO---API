@@ -20,46 +20,30 @@
 .
 ├── Dockerfile
 ├── README.md
-├── app.py
-├── backend
-│   ├── Dockerfile
-│   ├── __init__.py
-│   ├── __pycache__
-│   │   └── main.cpython-312.pyc
-│   ├── main.py
-│   └── requirements.txt
-├── dataset.py
 ├── docker-compose.yml
-├── frontend
-│   ├── Dockerfile
-│   ├── logo_horizontal.png
-│   ├── requirements.txt
-│   └── streamlit_app.py
-├── info.txt
-├── logo_horizontal.png
 ├── main.py
 ├── requirements.txt
-├── server.py
-├── text_files
-│   ├── about-us.txt
-│   ├── career.txt
-│   ├── developer-program.txt
-│   ├── developer.txt
-│   ├── event.txt
-│   ├── gcore-platform.txt
-│   ├── gigalogy.com.txt
-│   ├── gpt-flow-platform.txt
-│   ├── mission.txt
-│   ├── personalization-platform.txt
-│   ├── personalization-use-case.txt
-│   ├── platform.gigalogy.com.txt
-│   ├── press-room.txt
-│   ├── request-demo.txt
-│   ├── smartads-platform.txt
-│   ├── smartads-use-case.txt
-│   └── team.txt
-├── vectorDB.py
-└── worker.py
+└── src
+    ├── __init__.py
+    ├── api
+    │   ├── __init__.py
+    │   └── endpoints
+    │       ├── __init__.py
+    │       └── question_answer.py
+    ├── config
+    │   ├── __init__.py
+    │   └── settings.py
+    ├── data
+    │   ├── __init__.py
+    │   └── web_scraper.py
+    ├── models
+    │   ├── __init__.py
+    │   └── embeddings
+    │       └── embedding_model.py
+    └── services
+        ├── __init__.py
+        ├── prompt_service.py
+        └── vector_store_service.py
 ```
 
 ## Description
@@ -98,9 +82,6 @@ This project is a Question-Answering Assistant on Gigalogy built using FastAPI a
     - `QDRANT_API_KEY`: API key for Qdrant.
     - `QDRANT_URL`: URL of the Qdrant service.
     
-- **Configuration Files**:
-    - `backend/main.py`: FastAPI app configuration, including Qdrant and Google Generative AI setup.
-    - `frontend/streamlit_app.py`: Streamlit app configuration and UI setup.
 
 ## Usage
 1. Open your web browser and go to `http://localhost:8501`.
