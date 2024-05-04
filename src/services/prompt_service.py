@@ -10,14 +10,7 @@ import qdrant_client
 import textwrap
 from src.config.settings import google_api_key,qdrant_api_key,qdrant_url
 
-with open("/run/secrets/google_api_key", "r") as google_api_key_file:
-    google_api_key = google_api_key_file.read().strip()
 
-with open("/run/secrets/qdrant_api_key", "r") as qdrant_api_key_file:
-    qdrant_api_key = qdrant_api_key_file.read().strip()
-
-with open("/run/secrets/qdrant_url", "r") as qdrant_url_file:
-    qdrant_url = qdrant_url_file.read().strip()
 
 # load_dotenv()
 qdrant_api_key = qdrant_api_key
