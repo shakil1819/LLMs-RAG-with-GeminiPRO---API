@@ -1,6 +1,7 @@
 # src/api/endpoints/question_answer.py
 import os
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import PlainTextResponse
 from src.services.prompt_service import get_vector_store, get_prompt, process_llm_response
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
@@ -37,11 +38,20 @@ qa_chain = RetrievalQA.from_chain_type(
     chain_type_kwargs={"prompt":QA_prompt}
 )
 
-@router.post("/ask")
+# @router.post("/ask")
+# async def ask(question: str):
+#     try:
+#         llm_res = qa_chain.invoke(question)
+#         response, sources = process_llm_response(llm_res)
+#         return {"answer": response, "sources": sources}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+@router.post("/ask", response_class=PlainTextResponse)
 async def ask(question: str):
     try:
         llm_res = qa_chain.invoke(question)
         response, sources = process_llm_response(llm_res)
-        return {"answer": response, "sources": sources}
+        plain_text_response = f"Answer: {response}\n\nSources:\n" + "\n".join(sources)
+        return plain_text_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
