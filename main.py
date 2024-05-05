@@ -14,6 +14,6 @@ app = FastAPI()
 app.include_router(question_answer_router)
 
 # Run Streamlit app as a subprocess
-subprocess.Popen(["streamlit", "run", "src/frontend/streamlit.py"])
+subprocess.Popen(["streamlit", "run", "src/frontend/streamlit.py", "--server.address", "0.0.0.0", "--server.port", "8501"])
 
 
