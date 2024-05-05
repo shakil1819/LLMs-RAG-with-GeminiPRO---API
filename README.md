@@ -23,27 +23,39 @@
 ├── docker-compose.yml
 ├── main.py
 ├── requirements.txt
-└── src
-    ├── __init__.py
-    ├── api
-    │   ├── __init__.py
-    │   └── endpoints
-    │       ├── __init__.py
-    │       └── question_answer.py
-    ├── config
-    │   ├── __init__.py
-    │   └── settings.py
-    ├── data
-    │   ├── __init__.py
-    │   └── web_scraper.py
-    ├── models
-    │   ├── __init__.py
-    │   └── embeddings
-    │       └── embedding_model.py
-    └── services
-        ├── __init__.py
-        ├── prompt_service.py
-        └── vector_store_service.py
+├── secrets
+│   ├── google_api_key.secret
+│   ├── qdrant_api_key.secret
+│   └── qdrant_url.secret
+├── src
+│   ├── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── endpoints
+│   │       ├── __init__.py
+│   │       └── question_answer.py
+│   ├── config
+│   │   ├── __init__.py
+│   │   └── settings.py
+│   ├── data
+│   │   ├── __init__.py
+│   │   └── web_scraper.py
+│   ├── frontend
+│   │   ├── __init__.py
+│   │   ├── logo_horizontal.png
+│   │   └── streamlit.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── embeddings
+│   │       └── embedding_model.py
+│   └── services
+│       ├── __init__.py
+│       ├── prompt_service.py
+│       └── vector_store_service.py
+└── tree.txt
+
+10 directories, 25 files
+
 ```
 
 ## Description
@@ -81,9 +93,15 @@ This project is a Question-Answering Assistant on Gigalogy built using FastAPI a
     - `GOOGLE_API_KEY`: API key for Google Generative AI.
     - `QDRANT_API_KEY`: API key for Qdrant.
     - `QDRANT_URL`: URL of the Qdrant service.
-    
+    - Follow this structure in order to achieve secrets via `docker-compose.yml`
+        ```CSS
+        ├── secrets
+        │   ├── google_api_key.secret
+        │   ├── qdrant_api_key.secret
+        │   └── qdrant_url.secret
+        ```
 
 ## Usage
-1. Open your web browser and go to `http://localhost:8501`.
+1. Open your web browser and go to `http://localhost:8501` & `http://localhost:8000/docs` .
 2. You will see a text box where you can type your question.
 3. After entering your question and pressing Enter, the system will fetch and display the most relevant answer along with the source URLs.
