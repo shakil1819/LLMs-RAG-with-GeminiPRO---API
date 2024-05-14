@@ -39,27 +39,27 @@ qa_chain = RetrievalQA.from_chain_type(
     chain_type_kwargs={"prompt":QA_prompt}
 )
 
-# @router.post("/ask")
-# async def ask(question: str):
-#     try:
-#         llm_res = qa_chain.invoke(question)
-#         response, sources = process_llm_response(llm_res)
-#         return {"answer": response, "sources": sources}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-@router.post("/ask", response_class=PlainTextResponse)
+@router.post("/ask")
 async def ask(question: str):
     try:
         llm_res = qa_chain.invoke(question)
         response, sources = process_llm_response(llm_res)
-        
-        # Remove extra asterisks and unnecessary regex
-        response = re.sub(r'\*{2,}', '', response)
-        response = re.sub(r'\n+', '\n', response)
-        
-        # Format plain text response
-        plain_text_response = f"Answer: {response}\n\nSources:\n" + "\n".join(sources)
-        
-        return plain_text_response
+        return {"answer": response, "sources": sources}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+# @router.post("/ask", response_class=PlainTextResponse)
+# async def ask(question: str):
+#     try:
+#         llm_res = qa_chain.invoke(question)
+#         response, sources = process_llm_response(llm_res)
+        
+#         # Remove extra asterisks and unnecessary regex
+#         response = re.sub(r'\*{2,}', '', response)
+#         response = re.sub(r'\n+', '\n', response)
+        
+#         # Format plain text response
+#         plain_text_response = f"Answer: {response}\n\nSources:\n" + "\n".join(sources)
+        
+#         return plain_text_response
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))

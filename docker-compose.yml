@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  streamlit:
+  frontend:
     build: .
     ports:
       - "8501:8501"
@@ -15,7 +15,7 @@ services:
       - qdrant_api_key
       - qdrant_url
         
-  app:
+  backend:
     build: .
     ports:
       - "8000:8000"
