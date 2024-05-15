@@ -8,7 +8,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from src.config.settings import google_api_key,qdrant_api_key,qdrant_url
-
+from pydantic import BaseModel
 router = APIRouter()
 
 # Step 1: Define vector store
@@ -37,10 +37,14 @@ qa_chain = RetrievalQA.from_chain_type(
     chain_type_kwargs={"prompt":QA_prompt}
 )
 
+
+class InputData(BaseModel):
+    input_text: str
+
 @router.post("/ask")
-async def ask(question: str):
+async def ask(question: InputData):
     try:
-        llm_res = qa_chain.invoke(question)
+        llm_res = qa_chain.invoke(question.input_text)  # Access input_text attribute
         response, sources = process_llm_response(llm_res)
         return {"answer": response, "sources": sources}
     except Exception as e:
