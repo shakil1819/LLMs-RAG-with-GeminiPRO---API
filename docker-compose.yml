@@ -1,11 +1,12 @@
 version: '3.8'
 
 services:
-  frontend:
-    build: .
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8501:8501"
-    command: ["streamlit", "run", "main.py"]
+      - "8000:8000"
     environment:
       GOOGLE_API_KEY_FILE: /run/secrets/google_api_key
       QDRANT_API_KEY_FILE: /run/secrets/qdrant_api_key
@@ -14,11 +15,14 @@ services:
       - google_api_key
       - qdrant_api_key
       - qdrant_url
-        
-  backend:
-    build: .
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8501:8501"
+    command: streamlit run ./src/frontend/main.py
     environment:
       GOOGLE_API_KEY_FILE: /run/secrets/google_api_key
       QDRANT_API_KEY_FILE: /run/secrets/qdrant_api_key
@@ -35,4 +39,3 @@ secrets:
     file: ./secrets/qdrant_api_key.secret
   qdrant_url:
     file: ./secrets/qdrant_url.secret
-

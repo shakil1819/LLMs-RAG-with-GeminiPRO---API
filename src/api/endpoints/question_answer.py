@@ -1,17 +1,15 @@
 # src/api/endpoints/question_answer.py
 import os
 import re
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, FastAPI
 from fastapi.responses import PlainTextResponse
 from src.services.prompt_service import get_vector_store, get_prompt, process_llm_response
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from src.config.settings import google_api_key,qdrant_api_key,qdrant_url
+
 router = APIRouter()
-
-
-
 
 # Step 1: Define vector store
 vector_store = get_vector_store()
@@ -63,3 +61,5 @@ async def ask(question: str):
 #         return plain_text_response
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
+app=FastAPI()
+app.include_router(router)
