@@ -14,9 +14,9 @@ def fetch_data(input_text):
 
 def main():
     st.set_page_config(page_title="RAG Assistant For Gigalogy")
-    st.markdown("# About Gigalogy :")
-    # image = Image.open('logo_horizontal.png')
-    # st.image(image, caption='by Shakil Mosharrof', use_column_width=True)
+    st.markdown('<h1 align="center">About Gigalogy :</h1>', unsafe_allow_html=True)
+    image = Image.open('./src/frontend/logo_horizontal.png')
+    st.image(image, caption='by Shakil Mosharrof', use_column_width=True)
     st.header("")
     user_question = st.text_input("Type your question here")
     if user_question:
