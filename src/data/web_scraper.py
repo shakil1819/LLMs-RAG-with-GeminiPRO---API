@@ -64,15 +64,7 @@ async def main():
 asyncio.run(main())
 
 # Perform Tokenization using Text Splitter
-# (Note: This part of the code is moved outside the web scraper as it requires the scraped data)
-
-
-
-# src/data/web_scraper.py
-
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-def load_and_split_documents(file_paths: List[str]) -> List[List[str]]:
+def load_and_split_documents(file_paths: List[str], max_chunk_size=9000) -> List[List[str]]:
     all_chunks = []
     splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=2048, chunk_overlap=100
@@ -82,7 +74,16 @@ def load_and_split_documents(file_paths: List[str]) -> List[List[str]]:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
         chunks = splitter.split_text(content)
-        all_chunks.append(chunks)
+        
+        # Further split chunks if they exceed the max_chunk_size
+        small_chunks = []
+        for chunk in chunks:
+            if len(chunk) > max_chunk_size:
+                for i in range(0, len(chunk), max_chunk_size):
+                    small_chunks.append(chunk[i:i + max_chunk_size])
+            else:
+                small_chunks.append(chunk)
+        all_chunks.append(small_chunks)
     return all_chunks
 
 # Assuming you have saved the scraped text files, use this part of the code to tokenize
@@ -93,3 +94,5 @@ file_paths = [
 ]
 all_chunks = load_and_split_documents(file_paths)
 print('\n> Chunking and splitting completed.')
+
+
