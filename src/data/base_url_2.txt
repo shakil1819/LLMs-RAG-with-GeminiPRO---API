@@ -1673,7 +1673,7 @@ Gigalogy Tutorial
 Environment setup
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -3703,7 +3703,7 @@ Gigalogy Tutorial
 Integration of Catalogue information and user behavior data
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -3944,7 +3944,7 @@ Gigalogy Tutorial
 Integration of Catalogue information and user behavior data
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -4185,7 +4185,7 @@ Gigalogy Tutorial
 Integration of Catalogue information and user behavior data
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -4426,7 +4426,7 @@ Gigalogy Tutorial
 Integration of Catalogue information and user behavior data
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -7559,7 +7559,7 @@ Gigalogy Tutorial
 Training your data
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -7647,7 +7647,7 @@ Gigalogy Tutorial
 Training your data
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -7735,7 +7735,7 @@ Gigalogy Tutorial
 Training your data
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -7823,7 +7823,7 @@ Gigalogy Tutorial
 Training your data
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -8013,7 +8013,7 @@ Gigalogy Tutorial
 Personalized Image Search
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -8061,7 +8061,7 @@ Gigalogy Tutorial
 Personalized Image Search
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -8592,7 +8592,7 @@ Gigalogy Tutorial
 Dynamic Pricing
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -8642,7 +8642,7 @@ Gigalogy Tutorial
 Dynamic Pricing
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -9416,7 +9416,7 @@ Gigalogy Tutorial
 Questionnaire
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -9597,7 +9597,7 @@ Gigalogy Tutorial
 Questionnaire
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -9778,7 +9778,7 @@ Gigalogy Tutorial
 Questionnaire
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -9959,7 +9959,7 @@ Gigalogy Tutorial
 Questionnaire
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -10942,7 +10942,7 @@ Gigalogy Tutorial
 GPT Project setup
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -12376,7 +12376,7 @@ Gigalogy Tutorial
 GPT Integration
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -12847,7 +12847,7 @@ Gigalogy Tutorial
 Release notes
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
@@ -12914,7 +12914,7 @@ Gigalogy Tutorial
 Release notes
 English
 Japanese
-Initializing search
+Type to start searching
 Gigalogy Tutorial
 Overview
 Account and Project creation
