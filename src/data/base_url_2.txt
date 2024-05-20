@@ -1673,7 +1673,7 @@ Gigalogy Tutorial
 Environment setup
 English
 Japanese
-Type to start searching
+Initializing search
 Gigalogy Tutorial
 Overview
 Account and Project creation
