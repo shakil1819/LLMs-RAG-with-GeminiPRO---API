@@ -7,8 +7,8 @@ from src.data.web_scraper import all_chunks
 from src.config.settings import google_api_key, qdrant_api_key, qdrant_url
 
 # src/services/vector_store_service.py
-collection_name = "rag-gemini-new"
-gemini_api_key = gemini_api_key  # Assuming google_api_key is set in settings
+collection_name = "rag-gemini-21052024"
+gemini_api_key = google_api_key  # Assuming google_api_key is set in settings
 # src/services/vector_store_service.py
 
 def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdrant_url, qdrant_api_key):

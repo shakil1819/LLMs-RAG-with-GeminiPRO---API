@@ -48,11 +48,23 @@ base_urls = {
     "https://api.recommender.gigalogy.com/redoc": "base_url_3.txt"
 }
 
+# Function to combine all the individual files into one
+def combine_files(output_file, input_files):
+    with open(output_file, 'w', encoding='utf-8') as outfile:
+        for fname in input_files:
+            with open(fname, 'r', encoding='utf-8') as infile:
+                outfile.write(infile.read())
+                outfile.write("\n" + "="*80 + "\n")
+
 # Run the async function for each base URL
 async def main():
     for base_url, file_name in base_urls.items():
         print(f"Starting scraping for {base_url}")
         await scrape_website(base_url, file_name)
+
+    # Combine the scraped files into one
+    combined_file = 'combined_file.txt'
+    combine_files(combined_file, base_urls.values())
 
 # Start the script
 asyncio.run(main())
