@@ -4,3 +4,5 @@ tree.txt
 test.txt
 test.py
 __pycache__
+*.secret
+src/
