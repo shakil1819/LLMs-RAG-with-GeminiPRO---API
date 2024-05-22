@@ -10,6 +10,7 @@
     pkgs.python311
     pkgs.python311Packages.pip
     pkgs.docker
+    pkgs.playwright
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
   ];
