@@ -9,7 +9,6 @@ import os
 import qdrant_client
 import textwrap
 from src.config.settings import google_api_key,qdrant_api_key,qdrant_url
-from src.data.web_scraper import all_chunks
 
 
 # load_dotenv()
