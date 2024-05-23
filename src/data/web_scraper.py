@@ -2,6 +2,7 @@
 
 from langchain_community.document_loaders import AsyncChromiumLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_transformers import BeautifulSoupTransformer
 import asyncio
@@ -9,6 +10,9 @@ from playwright.async_api import async_playwright
 from urllib.parse import urljoin, urlparse
 import os
 from typing import List, Set
+import json
+from pathlib import Path
+from pprint import pprint
 
 # Set to keep track of visited URLs to avoid duplicates for each base URL
 visited_urls = set()
@@ -96,3 +100,6 @@ all_chunks = load_and_split_documents(file_paths)
 print('\n> Chunking and splitting completed.')
 
 
+file_path="./redoc.json"
+data = json.loads(Path(file_path).read_text())
+pprint(data)
