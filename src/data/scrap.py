@@ -1,70 +1,74 @@
-import asyncio
-from playwright.async_api import async_playwright
-from urllib.parse import urljoin, urlparse
+from qdrant_client.models import PointStruct, VectorParams, Distance
+import google.generativeai as gemini_client
 import os
+import qdrant_client
+from dotenv import load_dotenv
 
-# Set to keep track of visited URLs to avoid duplicates for each base URL
-visited_urls = set()
+# Load environment variables from .env file
 
-async def scrape_page(page, url, file):
-    await page.goto(url)
-    # Extract and write text content of the page
-    text_content = await page.evaluate("document.body.innerText")
-    file.write(f"URL: {url}\n")
-    file.write(text_content)
-    file.write("\n" + "="*80 + "\n")
-    
-    # Extract all links from the page
-    links = await page.evaluate('''() => Array.from(document.querySelectorAll('a'))
-                                  .map(a => a.href).filter(href => href.startsWith(location.origin) || !href.startsWith('http'))''')
-    return links
+gemini_api_key = "AIzaSyCB7mG7dX3qrv2SUrZZ-5f5pJ6GZpleKlw"
+qdrant_api_key = "UNImexEbR-mV-Ous_gqQPul7Lb01Qxa9fG_O0jnN5vFmGe0uBgnZzg"
+qdrant_url = "https://f2d1c961-076f-4551-b1f9-61a19a649108.us-east4-0.gcp.cloud.qdrant.io:6333"
+def add_documents_to_collection(collection_name, qdrant_client, chunk_size=2048, overlap=100):
+    try:
+        # Get the path to the directory containing this script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Define the path to the scraped_data folder within the same directory
+        text_files_dir = os.path.join(script_dir, "scraped_data")
 
-async def scrape_website(base_url, file_name):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        global visited_urls
-        visited_urls = set()  # Reset visited URLs for each base URL
-        with open(file_name, 'w', encoding='utf-8') as file:
-            await recursive_scrape(page, base_url, file, base_url)
-        await browser.close()
+        # Read all the .txt files from the text_files folder
+        documents = []
+        for filename in os.listdir(text_files_dir):
+            if filename.endswith(".txt" and ".json"):
+                file_path = os.path.join(text_files_dir, filename)
+                with open(file_path, "r") as file:
+                    document = file.read()
+                    documents.append(document)
+                    
+        # Remove any leading or trailing whitespace from the lines
+        documents = [doc.strip() for doc in documents]
 
-async def recursive_scrape(page, url, file, base_url):
-    if url in visited_urls:
-        return
-    visited_urls.add(url)
-    print(f"Scraping: {url}")
-    links = await scrape_page(page, url, file)
-    for link in links:
-        # Resolve relative links
-        absolute_link = urljoin(url, link)
-        if urlparse(absolute_link).netloc == urlparse(base_url).netloc:
-            await recursive_scrape(page, absolute_link, file, base_url)
 
-# List of base URLs and corresponding output files
-base_urls = {
-    "http://gigalogy.com/": "base_url_1.txt",
-    "https://tutorial.gigalogy.com/": "base_url_2.txt",
-    "https://api.recommender.gigalogy.com/redoc": "base_url_3.txt"
-}
+        # Chunk and overlap the documents
+        chunked_documents = []
+        for doc in documents:
+            for i in range(0, len(doc), chunk_size - overlap):
+                chunk = doc[i:i + chunk_size]
+                chunked_documents.append(chunk)
 
-# Function to combine all the individual files into one
-def combine_files(output_file, input_files):
-    with open(output_file, 'w', encoding='utf-8') as outfile:
-        for fname in input_files:
-            with open(fname, 'r', encoding='utf-8') as infile:
-                outfile.write(infile.read())
-                outfile.write("\n" + "="*80 + "\n")
+        # Embed documents using gemini_client
+        results = [
+            gemini_client.embed_content(
+                model="models/embedding-001",
+                content=document,
+                task_type="retrieval_document",
+                title="Qdrant x Gemini",
+            )
+            for document in chunked_documents
+        ]
 
-# Run the async function for each base URL
-async def main():
-    for base_url, file_name in base_urls.items():
-        print(f"Starting scraping for {base_url}")
-        await scrape_website(base_url, file_name)
+        # Creating Qdrant Points
+        points = [
+            PointStruct(
+                id=idx,
+                vector=response["embedding"],
+                payload={"text": document},
+            )
+            for idx, (response, document) in enumerate(zip(results, chunked_documents))
+        ]
+        from config.settings import qdrant_client 
+        # Create Collection
+        qdrant_client.create_collection(
+            collection_name="test",
+            vectors_config=VectorParams(
+                size=768,
+                distance=Distance.COSINE,
+            ),
+        )
 
-    # Combine the scraped files into one
-    combined_file = 'combined_file.txt'
-    combine_files(combined_file, base_urls.values())
-
-# Start the script
-asyncio.run(main())
+        # Add to Collection
+        qdrant_client.upsert(collection_name, points)
+        print("Documents added successfully to the collection.")
+    except Exception as e:
+        print(f"An error occurred while setting up qdrant collection: {e}")

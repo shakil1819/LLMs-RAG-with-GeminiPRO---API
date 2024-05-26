@@ -1,15 +1,17 @@
-# src/services/vector_store_service.py
-
 import google.generativeai as gemini_client
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from src.data.web_scraper import all_chunks
 from src.config.settings import google_api_key, qdrant_api_key, qdrant_url
+from itertools import chain
 
-# src/services/vector_store_service.py
+# Set the API keys and URL
+gemini_api_key = "AIzaSyCB7mG7dX3qrv2SUrZZ-5f5pJ6GZpleKlw"
+qdrant_api_key = "UNImexEbR-mV-Ous_gqQPul7Lb01Qxa9fG_O0jnN5vFmGe0uBgnZzg"
+qdrant_url = "https://f2d1c961-076f-4551-b1f9-61a19a649108.us-east4-0.gcp.cloud.qdrant.io:6333"
+
+# Collection name
 collection_name = "rag-gemini-21052024"
-gemini_api_key = google_api_key  # Assuming google_api_key is set in settings
-# src/services/vector_store_service.py
 
 def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdrant_url, qdrant_api_key):
     print("> Creating QdrantDB connection")
@@ -32,6 +34,9 @@ def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdran
         )
         embeddings.append(response['embedding'])
     
+    # Flatten the list of chunks
+    text_chunks = list(chain.from_iterable(all_chunks))
+    
     # Create points for upserting into Qdrant
     points = [
         PointStruct(
@@ -48,7 +53,10 @@ def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdran
         distance=Distance.COSINE
     )
     
-    client.recreate_collection(
+    # Check if the collection already exists, and recreate it if necessary
+    if collection_name in [c.name for c in client.list_collections()]:
+        client.delete_collection(collection_name)
+    client.create_collection(
         collection_name=collection_name,
         vectors_config=vectors_config
     )
@@ -60,12 +68,9 @@ def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdran
     )
     print("> Chunks of text saved in Qdrant DB")
 
-# Parameters
-
-
 # Execute the function
 create_qdrant_collection(
-    text_chunks=[chunk for sublist in all_chunks for chunk in sublist],  # Flatten the list of chunks
+    text_chunks=text_chunks,
     gemini_api_key=gemini_api_key,
     collection_name=collection_name,
     qdrant_url=qdrant_url,

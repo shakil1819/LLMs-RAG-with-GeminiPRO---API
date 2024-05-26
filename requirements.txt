@@ -114,6 +114,7 @@ traitlets==5.14.3
 typing-inspect==0.9.0
 typing_extensions==4.11.0
 tzdata==2024.1
+ujson==5.10.0
 uritemplate==4.1.1
 urllib3==2.2.1
 uvicorn==0.29.0
