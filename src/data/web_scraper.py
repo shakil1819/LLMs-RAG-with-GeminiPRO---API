@@ -13,14 +13,31 @@ from pathlib import Path
 from pprint import pprint
 import ujson
 import fasttext
+import asyncio
+from urllib.parse import urljoin, urlparse
+from playwright.async_api import async_playwright
+
+import asyncio
+from urllib.parse import urljoin, urlparse
+from playwright.async_api import async_playwright
 
 # Set to keep track of visited URLs to avoid duplicates for each base URL
 visited_urls = set()
 
 async def scrape_page(page, url, file):
     await page.goto(url)
-    # Extract and write text content of the page
-    text_content = await page.evaluate("document.body.innerText")
+    # Extract and write text content of the page, excluding navbar, footer, and sidebars
+    text_content = await page.evaluate('''
+        () => {
+            let header = document.querySelector('header');
+            let footer = document.querySelector('footer');
+            let sidebars = document.querySelectorAll('.sidebar, aside');
+            if (header) header.remove();
+            if (footer) footer.remove();
+            sidebars.forEach(sidebar => sidebar.remove());
+            return document.body.innerText;
+        }
+    ''')
     file.write(f"URL: {url}\n")
     file.write(text_content)
     file.write("\n" + "="*80 + "\n")
@@ -58,6 +75,7 @@ base_urls = {
     "https://tutorial.gigalogy.com/": "base_url_2.txt",
     "https://api.recommender.gigalogy.com/redoc": "base_url_3.txt"
 }
+
 # Run the async function for each base URL
 async def main():
     for base_url, file_name in base_urls.items():
@@ -67,11 +85,10 @@ async def main():
 # Start the script
 asyncio.run(main())
 
-# Perform Tokenization using Text Splitter
 def load_and_split_documents(file_paths: List[str], max_chunk_size=9000) -> List[List[str]]:
     all_chunks = []
     splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=2048, chunk_overlap=100
+        chunk_size=2048, chunk_overlap=10
     )
     print('\n> Splitting documents into chunks')
     for file_path in file_paths:
@@ -98,89 +115,3 @@ file_paths = [
 ]
 all_chunks = load_and_split_documents(file_paths)
 print('\n> Chunking and splitting completed.')
-
-# Recursively split JSON
-file_path = "./redoc.json"
-json_splitter = RecursiveJsonSplitter(max_chunk_size=300)
-json_data = ujson.loads(Path(file_path).read_text())
-json_chunks = json_splitter.split_json(json_data=json_data)
-print(f"\n> JSON chunks: {len(json_chunks)}")
-
-import google.generativeai as gemini_client
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
-# from src.data.web_scraper import all_chunks
-# from src.config.settings import google_api_key, qdrant_api_key, qdrant_url
-from itertools import chain
-import numpy as np
-
-# gemini_api_key = "AIzaSyCB7mG7dX3qrv2SUrZZ-5f5pJ6GZpleKlw"
-# qdrant_api_key = "UNImexEbR-mV-Ous_gqQPul7Lb01Qxa9fG_O0jnN5vFmGe0uBgnZzg"
-# qdrant_url = "https://f2d1c961-076f-4551-b1f9-61a19a649108.us-east4-0.gcp.cloud.qdrant.io:6333"
-
-# Collection name
-collection_name = "rag-gemini-21052024"
-
-def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdrant_url, qdrant_api_key):
-    print("> Creating QdrantDB connection")
-    
-    # Create a Qdrant Client
-    client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
-    print(">\nQdrant connection established.")
-    
-    # Configure Gemini client
-    gemini_client.configure(api_key=gemini_api_key)
-    
-    # Generate embeddings for text chunks using Gemini
-    embeddings = []
-    for chunk in text_chunks:
-        response = gemini_client.embed_content(
-            model="models/embedding-001",
-            content=chunk,
-            task_type="retrieval_document",
-            title="Document Chunk"
-        )
-        embeddings.append(np.array(response['embedding']))
-    
-    # Flatten the list of chunks
-    text_chunk = list(chain.from_iterable(all_chunks))
-    
-    # Create points for upserting into Qdrant
-    points = [
-        PointStruct(
-            id=idx,
-            vector=embedding.tolist(),
-            payload={"text": chunk}
-        )
-        for idx, (chunk, embedding) in enumerate(zip(text_chunks, embeddings))
-    ]
-    
-    # Create collection in Qdrant
-    vectors_config = VectorParams(
-        size=768,  # Assuming the Gemini embedding size is 768
-        distance=Distance.COSINE
-    )
-    
-    # Check if the collection already exists, and recreate it if necessary
-    if collection_name in [c.name for c in client.list_collections()]:
-        client.delete_collection(collection_name)
-    client.create_collection(
-        collection_name=collection_name,
-        vectors_config=vectors_config
-    )
-    
-    # Upsert points into Qdrant
-    client.upsert(
-        collection_name=collection_name,
-        points=points
-    )
-    print("> Chunks of text saved in Qdrant DB")
-
-# Execute the function
-create_qdrant_collection(
-    text_chunks=all_chunks,
-    gemini_api_key=gemini_api_key,
-    collection_name=collection_name,
-    qdrant_url=qdrant_url,
-    qdrant_api_key=qdrant_api_key
-)
