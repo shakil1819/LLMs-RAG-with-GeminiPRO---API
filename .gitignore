@@ -14,7 +14,7 @@ secrets/
 __pycache__/
 *.py[cod]
 *$py.class
-
+src/data/redoc.json
 # C extensions
 *.so
 
@@ -150,3 +150,5 @@ dmypy.json
 cython_debug/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Flask,Python
+src/data/redoc.json
+src/data/redoc.json
