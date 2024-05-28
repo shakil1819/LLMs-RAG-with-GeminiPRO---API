@@ -1,78 +1,90 @@
-import google.generativeai as gemini_client
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
-from src.data.web_scraper import all_chunks
-from src.config.settings import google_api_key, qdrant_api_key, qdrant_url
-from itertools import chain
+import getpass
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import Qdrant
+import qdrant_client
+import nest_asyncio
+import json
+import warnings
+from langchain.schema import Document
+import re
+from langchain_community.document_loaders import AsyncChromiumLoader
+from langchain_community.document_transformers import BeautifulSoupTransformer
+from langchain.chains import RetrievalQA
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+import os
 
-# Set the API keys and URL
-gemini_api_key = "AIzaSyCB7mG7dX3qrv2SUrZZ-5f5pJ6GZpleKlw"
-qdrant_api_key = "UNImexEbR-mV-Ous_gqQPul7Lb01Qxa9fG_O0jnN5vFmGe0uBgnZzg"
-qdrant_url = "https://f2d1c961-076f-4551-b1f9-61a19a649108.us-east4-0.gcp.cloud.qdrant.io:6333"
+# Step 1: Configurations (Gemini, QDrant)
+load_dotenv()
+gemini_api_key = os.getenv("GOOGLE_API_KEY")
+warnings.filterwarnings("ignore")
+nest_asyncio.apply()
+qdrant_api_key = os.getenv("QDRANT_API_KEY")
+qdrant_url = os.getenv("QDRANT_URL")
 
-# Collection name
-collection_name = "rag-gemini-21052024"
+# Gemini AI vector Embedding Model
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
-def create_qdrant_collection(text_chunks, gemini_api_key, collection_name, qdrant_url, qdrant_api_key):
+# Gemini AI model
+llm = ChatGoogleGenerativeAI(model="gemini-pro", gemini_api_key=gemini_api_key)
+
+# Step 2: Dataset loading
+docs_transformed = "../data/merged.txt"
+
+# Step 3: Dataset Splitting and chunking
+splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+    chunk_size=2048, 
+    chunk_overlap=10
+)
+
+with open(docs_transformed, 'r') as f:
+    text = f.read()
+
+print('\n>Splitting documents into chunks')
+chunks = splitter.split_text(text)
+
+# Step 4: Create QDrant VectorDB setup (Cloud)
+def qdrant_collection(text_chunks, embedding_model, collection_name):
     print("> Creating QdrantDB connection")
     
     # Create a Qdrant Client
-    client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+    client = qdrant_client.QdrantClient(
+        qdrant_url, 
+        api_key=qdrant_api_key
+    )
     print(">\nQdrant connection established.")
     
-    # Configure Gemini client
-    gemini_client.configure(api_key=gemini_api_key)
-    
-    # Generate embeddings for text chunks using Gemini
-    embeddings = []
-    for chunk in text_chunks:
-        response = gemini_client.embed_content(
-            model="models/embedding-001",
-            content=chunk,
-            task_type="retrieval_document",
-            title="Document Chunk"
-        )
-        embeddings.append(response['embedding'])
-    
-    # Flatten the list of chunks
-    text_chunks = list(chain.from_iterable(all_chunks))
-    
-    # Create points for upserting into Qdrant
-    points = [
-        PointStruct(
-            id=idx,
-            vector=embedding,
-            payload={"text": chunk}
-        )
-        for idx, (chunk, embedding) in enumerate(zip(text_chunks, embeddings))
-    ]
-    
-    # Create collection in Qdrant
-    vectors_config = VectorParams(
-        size=768,  # Assuming the Gemini embedding size is 768
-        distance=Distance.COSINE
+    # Create a collection
+    vectors_config = qdrant_client.http.models.VectorParams(
+        size=768,
+        distance=qdrant_client.http.models.Distance.COSINE
     )
     
-    # Check if the collection already exists, and recreate it if necessary
-    if collection_name in [c.name for c in client.list_collections()]:
-        client.delete_collection(collection_name)
-    client.create_collection(
+    # Let's create collection
+    client.recreate_collection(
         collection_name=collection_name,
         vectors_config=vectors_config
     )
     
-    # Upsert points into Qdrant
-    client.upsert(
-        collection_name=collection_name,
-        points=points
+    # Create a list of Document objects
+    documents = [Document(page_content=chunk) for chunk in text_chunks]
+    
+    # Save in Qdrant DB
+    qdrant = Qdrant.from_documents(
+        documents,
+        embedding_model,
+        url=qdrant_url,
+        api_key=qdrant_api_key,
+        prefer_grpc=True,
+        collection_name=collection_name
     )
-    print("> Chunks of text saved in Qdrant DB")
+    print("> Chunk of text saved in Qdrant DB")
 
-# Execute the function
-create_qdrant_collection(
-    text_chunks=text_chunks,
-    gemini_api_key=gemini_api_key,
-    collection_name=collection_name,
-    qdrant_url=qdrant_url,
-    qdrant_api_key=qdrant_api_key
-)
+# Run the overall processing
+print("WEB SCRAPPING AND VECTOR EMBEDDING PROCESS BEGINS")
+docs = "../data/merged.txt"
+
+qdrant_collection(chunks, embeddings, collection_name='rag-gemini-new')
