@@ -29,7 +29,7 @@ def get_vector_store():
     # Vector store for Retrieval
     vector_store = Qdrant(
         client=client,
-        collection_name='rag-gemini-new',
+        collection_name='rag-gemini',
         embeddings=embeddings
     )
     

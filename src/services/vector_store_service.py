@@ -84,7 +84,7 @@ def qdrant_collection(text_chunks, embedding_model, collection_name):
     print("> Chunk of text saved in Qdrant DB")
 
 # Run the overall processing
-print("WEB SCRAPPING AND VECTOR EMBEDDING PROCESS BEGINS")
+print("VECTOR EMBEDDING PROCESS BEGINS")
 docs = "../data/merged.txt"
 
-qdrant_collection(chunks, embeddings, collection_name='rag-gemini-new')
+qdrant_collection(chunks, embeddings, collection_name='rag-gemini')
